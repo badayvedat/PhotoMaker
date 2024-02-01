@@ -369,7 +369,9 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         prompt: Union[str, List[str]] = None,
         prompt_2: Optional[Union[str, List[str]]] = None,
         image: PipelineImageInput = None,
-        strength: float = 0.3,
+        height = 1024,
+        width = 1024,
+        strength: float = 1.0,
         timesteps: List[int] = None,
         num_inference_steps: int = 50,
         denoising_end: Optional[float] = None,
@@ -422,6 +424,19 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             [`~pipelines.stable_diffusion_xl.StableDiffusionXLPipelineOutput`] if `return_dict` is True, otherwise a
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
+        # 2. Define call parameters
+        if prompt is not None and isinstance(prompt, str):
+            batch_size = 1
+        elif prompt is not None and isinstance(prompt, list):
+            batch_size = len(prompt)
+        else:
+            batch_size = prompt_embeds.shape[0]
+
+        device = self._execution_device
+
+        if image is None:
+            # make randn tensor
+            image = randn_tensor((batch_size, 4, height // 8, width // 8), generator=generator, device=device, dtype=self.vae.dtype)
 
 
         # 1. Check inputs. Raise error if not correct
@@ -450,15 +465,6 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         if not isinstance(input_id_images, list):
             input_id_images = [input_id_images]
 
-        # 2. Define call parameters
-        if prompt is not None and isinstance(prompt, str):
-            batch_size = 1
-        elif prompt is not None and isinstance(prompt, list):
-            batch_size = len(prompt)
-        else:
-            batch_size = prompt_embeds.shape[0]
-
-        device = self._execution_device
 
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
