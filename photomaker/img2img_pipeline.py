@@ -421,26 +421,20 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             [`~pipelines.stable_diffusion_xl.StableDiffusionXLPipelineOutput`] if `return_dict` is True, otherwise a
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
-        # 0. Default height and width to unet
-        height = height or self.unet.config.sample_size * self.vae_scale_factor
-        width = width or self.unet.config.sample_size * self.vae_scale_factor
 
-        original_size = original_size or (height, width)
-        target_size = target_size or (height, width)
 
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
             prompt,
             prompt_2,
-            height,
-            width,
+            strength,
+            num_inference_steps,
             callback_steps,
             negative_prompt,
             negative_prompt_2,
             prompt_embeds,
             negative_prompt_embeds,
-            pooled_prompt_embeds,
-            negative_pooled_prompt_embeds,
+            callback,
         )
         #
         if prompt_embeds is not None and class_tokens_mask is None:
@@ -560,6 +554,9 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         height, width = latents.shape[-2:]
         height = height * self.vae_scale_factor
         width = width * self.vae_scale_factor
+
+        original_size = original_size or (height, width)
+        target_size = target_size or (height, width)
 
         # 10. Prepare added time ids & embeddings
         if self.text_encoder_2 is None:
