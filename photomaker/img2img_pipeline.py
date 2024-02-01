@@ -370,6 +370,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         prompt_2: Optional[Union[str, List[str]]] = None,
         image: PipelineImageInput = None,
         strength: float = 0.3,
+        timesteps: List[int] = None,
         num_inference_steps: int = 50,
         denoising_end: Optional[float] = None,
         guidance_scale: float = 5.0,
