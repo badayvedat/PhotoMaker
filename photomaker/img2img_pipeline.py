@@ -586,7 +586,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             negative_crops_coords_top_left,
             negative_target_size,
             dtype,
-            text_encoder_projection_dim=None,
+            text_encoder_projection_dim=text_encoder_projection_dim,
         )
         add_time_ids = torch.cat([add_time_ids, add_time_ids], dim=0)
         add_time_ids = add_time_ids.to(device).repeat(batch_size * num_images_per_prompt, 1)
