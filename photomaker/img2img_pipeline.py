@@ -447,7 +447,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             add_noise = False
             strength = 1.0
         else:
-            image = self.image_processor.preprocess(image, target_size=(height, width))
+            image = self.image_processor.preprocess(image)
 
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
