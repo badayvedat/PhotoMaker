@@ -445,6 +445,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             image = randn_tensor((batch_size, 4, height // 8, width // 8), generator=generator, device=device, dtype=self.vae.dtype)
             image = image * self.scheduler.init_noise_sigma
             add_noise = False
+            strength = 1.0
 
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
