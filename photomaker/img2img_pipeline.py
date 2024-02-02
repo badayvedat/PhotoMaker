@@ -576,6 +576,12 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         else:
             text_encoder_projection_dim = self.text_encoder_2.config.projection_dim
 
+        # 8. Prepare added time ids & embeddings
+        if negative_original_size is None:
+            negative_original_size = original_size
+        if negative_target_size is None:
+            negative_target_size = target_size
+
         add_time_ids = self._get_add_time_ids(
             original_size,
             crops_coords_top_left,
