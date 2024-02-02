@@ -571,6 +571,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         target_size = target_size or (height, width)
 
         # 10. Prepare added time ids & embeddings
+        add_text_embeds = pooled_prompt_embeds
         if self.text_encoder_2 is None:
             text_encoder_projection_dim = int(pooled_prompt_embeds.shape[-1])
         else:
