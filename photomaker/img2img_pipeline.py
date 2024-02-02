@@ -446,6 +446,8 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             image = image * self.scheduler.init_noise_sigma
             add_noise = False
             strength = 1.0
+        else:
+            image = self.image_processor.preprocess(image, target_size=(height, width))
 
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
