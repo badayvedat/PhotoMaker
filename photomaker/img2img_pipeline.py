@@ -582,7 +582,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
         if negative_target_size is None:
             negative_target_size = target_size
 
-        add_time_ids = self._get_add_time_ids(
+        add_time_ids, add_neg_time_ids = self._get_add_time_ids(
             original_size,
             crops_coords_top_left,
             target_size,
@@ -591,11 +591,20 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             negative_original_size,
             negative_crops_coords_top_left,
             negative_target_size,
-            dtype,
+            dtype=prompt_embeds.dtype,
             text_encoder_projection_dim=text_encoder_projection_dim,
         )
-        add_time_ids = torch.cat([add_time_ids, add_time_ids], dim=0)
-        add_time_ids = add_time_ids.to(device).repeat(batch_size * num_images_per_prompt, 1)
+        add_time_ids = add_time_ids.repeat(batch_size * num_images_per_prompt, 1)
+
+        if self.do_classifier_free_guidance:
+            prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds], dim=0)
+            add_text_embeds = torch.cat([negative_pooled_prompt_embeds, add_text_embeds], dim=0)
+            add_neg_time_ids = add_neg_time_ids.repeat(batch_size * num_images_per_prompt, 1)
+            add_time_ids = torch.cat([add_neg_time_ids, add_time_ids], dim=0)
+
+        prompt_embeds = prompt_embeds.to(device)
+        add_text_embeds = add_text_embeds.to(device)
+        add_time_ids = add_time_ids.to(device)
 
         # 11. Denoising loop
         num_warmup_steps = len(timesteps) - num_inference_steps * self.scheduler.order
