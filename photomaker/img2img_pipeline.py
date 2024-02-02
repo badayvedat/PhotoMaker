@@ -439,10 +439,12 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
 
         device = self._execution_device
 
+        add_noise = True
         if image is None:
             # make randn tensor
             image = randn_tensor((batch_size, 4, height // 8, width // 8), generator=generator, device=device, dtype=self.vae.dtype)
-
+            image = image * self.scheduler.init_noise_sigma
+            add_noise = False
 
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
@@ -557,7 +559,7 @@ class PhotoMakerStableDiffusionXLPipeline(StableDiffusionXLImg2ImgPipeline):
             prompt_embeds.dtype,
             device,
             generator,
-            True,
+            add_noise,
         )
 
         # 9. Prepare extra step kwargs. TODO: Logic should ideally just be moved out of the pipeline
